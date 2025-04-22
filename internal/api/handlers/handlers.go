@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/OleksandrOleniuk/twitchong/internal/api/shared"
 	"github.com/OleksandrOleniuk/twitchong/internal/config"
 	"github.com/OleksandrOleniuk/twitchong/pkg/utils"
 )
@@ -51,8 +52,6 @@ func (h *TwitchCallbackHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		// Extract parameters from the parsed values
 		accessToken := values.Get("access_token")
 		state := values.Get("state")
-		tokenType := values.Get("token_type")
-		scope := values.Get("scope")
 
 		// Verify state parameter
 		if state != h.cfg.Get().TwitchSecretState {
@@ -61,12 +60,8 @@ func (h *TwitchCallbackHandler) Handle(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Log callback data to console
-		log.Printf("Twitch OAuth Callback Data:")
-		log.Printf("Access Token: %s", accessToken)
-		log.Printf("State: %s", state)
-		log.Printf("Token Type: %s", tokenType)
-		log.Printf("Scope: %s", scope)
+		// Send access token to main goroutine
+		shared.OAuthTokenChan <- accessToken
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
