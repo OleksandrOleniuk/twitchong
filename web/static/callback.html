@@ -18,6 +18,10 @@
                 .then(response => {
                     if (response.ok) {
                         console.log('Callback data sent successfully');
+                        // Wait 5 seconds before redirecting
+                        setTimeout(() => {
+                            window.location.href = '/index.html';
+                        }, 5000);
                     }
                 })
                 .catch(error => {
@@ -29,6 +33,6 @@
 </head>
 <body>
     <h1>Processing Twitch Authentication...</h1>
-    <p>You can close this window once the authentication is complete.</p>
+    <p>You will be redirected to the home page in 5 seconds.</p>
 </body>
 </html> 

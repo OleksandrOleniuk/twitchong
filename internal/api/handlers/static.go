@@ -66,7 +66,6 @@ func (h *StaticHandler) serveIndexWithClientID(w http.ResponseWriter, filePath s
 
 	// Get config values
 	cfg := h.cfg.Get()
-	log.Printf("Raw config values - ClientId: %s, TwitchSecretState: %s", cfg.ClientId, cfg.TwitchSecretState)
 
 	// Execute the template with the client ID
 	data := struct {

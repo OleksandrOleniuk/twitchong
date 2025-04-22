@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,17 +11,26 @@ import (
 
 	"github.com/OleksandrOleniuk/twitchong/internal/api/routes"
 	"github.com/OleksandrOleniuk/twitchong/internal/config"
+	"github.com/OleksandrOleniuk/twitchong/pkg/utils"
+	"go.uber.org/zap"
 )
 
 // Server represents the HTTP server
 type Server struct {
 	httpServer *http.Server
 	config     *config.Provider
+	logger     *zap.Logger
 }
 
 // New creates a new server instance
 func New(cfg *config.Provider) *Server {
 	router := routes.SetupRoutes(cfg)
+
+	// Create a child logger with server context
+	logger := utils.With(
+		zap.String("component", "server"),
+		zap.Int("port", cfg.Get().ServerPort),
+	)
 
 	return &Server{
 		httpServer: &http.Server{
@@ -32,6 +40,7 @@ func New(cfg *config.Provider) *Server {
 			WriteTimeout: 15 * time.Second,
 		},
 		config: cfg,
+		logger: logger,
 	}
 }
 
@@ -39,9 +48,12 @@ func New(cfg *config.Provider) *Server {
 func (s *Server) Start() error {
 	// Server in a goroutine so shutdown can be handled gracefully
 	go func() {
-		log.Printf("Starting server on port %d", s.config.Get().ServerPort)
+		s.logger.Info("starting server")
 		if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Could not listen on port %d: %v", s.config.Get().ServerPort, err)
+			s.logger.Error("server failed to start",
+				zap.Error(err),
+				zap.Int("port", s.config.Get().ServerPort),
+			)
 		}
 	}()
 
@@ -50,7 +62,7 @@ func (s *Server) Start() error {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	log.Println("Shutting down server...")
+	s.logger.Info("shutting down server")
 
 	// Create a deadline for server shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -60,6 +72,6 @@ func (s *Server) Start() error {
 		return fmt.Errorf("server forced to shutdown: %w", err)
 	}
 
-	log.Println("Server gracefully stopped")
+	s.logger.Info("server gracefully stopped")
 	return nil
 }
