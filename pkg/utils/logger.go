@@ -25,25 +25,29 @@ const (
 	magenta = "\x1b[35m"
 	cyan    = "\x1b[36m"
 	white   = "\x1b[37m"
-	
+
 	// Bright colors
-	brightRed = "\x1b[91m"
-	brightGreen = "\x1b[92m"
-	brightYellow = "\x1b[93m"
-	brightBlue = "\x1b[94m"
+	brightRed     = "\x1b[91m"
+	brightGreen   = "\x1b[92m"
+	brightYellow  = "\x1b[93m"
+	brightBlue    = "\x1b[94m"
 	brightMagenta = "\x1b[95m"
-	brightCyan = "\x1b[96m"
-	
+	brightCyan    = "\x1b[96m"
+
 	// Muted colors
-	mutedRed = "\x1b[38;5;88m"
-	mutedGreen = "\x1b[38;5;28m"
-	mutedYellow = "\x1b[38;5;58m"
-	mutedBlue = "\x1b[38;5;24m"
+	mutedRed     = "\x1b[38;5;88m"
+	mutedGreen   = "\x1b[38;5;28m"
+	mutedYellow  = "\x1b[38;5;58m"
+	mutedBlue    = "\x1b[38;5;24m"
 	mutedMagenta = "\x1b[38;5;90m"
-	mutedCyan = "\x1b[38;5;30m"
-	
-	reset   = "\x1b[0m"
+	mutedCyan    = "\x1b[38;5;30m"
+
+	reset = "\x1b[0m"
 )
+
+func ZapString(key string, value string) zap.Field {
+	return zap.String(key, value)
+}
 
 // Custom color encoders
 func colorTimeEncoder(t zapcore.TimeEncoder) zapcore.TimeEncoder {
@@ -135,4 +139,5 @@ func Object(key string, obj interface{}) zapcore.Field {
 // PrettyObject logs an object in a nicely formatted way
 func PrettyObject(msg string, key string, obj interface{}) {
 	Logger.Info(msg, Object(key, obj))
-} 
+}
+

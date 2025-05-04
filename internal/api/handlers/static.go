@@ -115,4 +115,3 @@ func serveStaticFile(w http.ResponseWriter, filePath string) {
 		return
 	}
 }
-
