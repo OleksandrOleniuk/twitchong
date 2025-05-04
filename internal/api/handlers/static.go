@@ -14,11 +14,11 @@ import (
 
 // StaticHandler handles serving static files
 type StaticHandler struct {
-	cfg *config.Provider
+	cfg *config.Config
 }
 
 // NewStaticHandler creates a new StaticHandler
-func NewStaticHandler(cfg *config.Provider) http.HandlerFunc {
+func NewStaticHandler(cfg *config.Config) http.HandlerFunc {
 	handler := &StaticHandler{cfg: cfg}
 	return handler.ServeStatic
 }
@@ -65,7 +65,7 @@ func (h *StaticHandler) serveIndexWithClientID(w http.ResponseWriter, filePath s
 	var buf bytes.Buffer
 
 	// Get config values
-	cfg := h.cfg.Get()
+	cfg := h.cfg
 
 	// Execute the template with the client ID
 	data := struct {
@@ -114,4 +114,5 @@ func serveStaticFile(w http.ResponseWriter, filePath string) {
 		http.Error(w, "Error serving file", http.StatusInternalServerError)
 		return
 	}
-} 
+}
+

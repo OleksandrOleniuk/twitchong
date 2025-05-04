@@ -22,6 +22,7 @@ import (
 )
 
 var (
+	appConfig          *config.Config
 	websocketSessionID = ""
 	shutdownChan       = make(chan struct{})
 	wg                 sync.WaitGroup
@@ -29,11 +30,15 @@ var (
 )
 
 func main() {
-	// Load configuration
-	cfgProvider := config.MustNewConfigProvider()
+	var appConfigErr error
+	appConfig, appConfigErr = config.Load()
+
+	if appConfigErr != nil {
+		logger.Error("Failed to load app config")
+	}
 
 	// Initialize the server
-	srv := server.New(cfgProvider)
+	srv := server.New(appConfig)
 
 	// Start the server in a goroutine
 	wg.Add(1)
@@ -55,14 +60,13 @@ func main() {
 	logger.Info("received OAuth token, proceeding with validation")
 
 	// Update config with new access token
-	cfg := cfgProvider.Get()
-	cfg.OauthToken = accessToken
+	appConfig.OauthToken = accessToken
 
 	// Validate OAuth token
-	validateOAuthToken(cfg)
+	validateOAuthToken()
 
 	// Start WebSocket client
-	conn := startWebSocketClient(cfg.EventsubWebsocketUrl)
+	conn := startWebSocketClient(appConfig.EventsubWebsocketUrl)
 	if conn == nil {
 		logger.Error("failed to establish WebSocket connection")
 		close(shutdownChan)
@@ -88,15 +92,15 @@ func main() {
 
 	// Wait for all goroutines to complete
 	wg.Wait()
-	fmt.Println("Shutdown complete")
+	fmt.Println("Shutdocomplete")
 }
 
-func validateOAuthToken(cfg *config.Config) {
+func validateOAuthToken() {
 	config := utils.RequestConfig{
 		Method: "GET",
 		URL:    "https://id.twitch.tv/oauth2/validate",
 		Headers: map[string]string{
-			"Authorization": "OAuth " + cfg.OauthToken,
+			"Authorization": "OAuth " + appConfig.OauthToken,
 		},
 	}
 
@@ -146,7 +150,7 @@ func startWebSocketClient(url string) *websocket.Conn {
 			}
 
 			// Log the parsed data using the new PrettyObject function
-			utils.PrettyObject("received WebSocket message", "data", data)
+			// utils.PrettyObject("received WebSocket message", "data", data)
 
 			handleWebSocketMessage(data)
 		}
@@ -249,7 +253,7 @@ func handleWebSocketMessage(data interface{}) {
 			)
 
 			// Then check to see if that message was "HeyGuys"
-			if strings.TrimSpace(text) == "HeyGuys" {
+			if strings.Contains(text, "HeyGuys") {
 				// If so, send back "VoHiYo" to the chatroom
 				sendChatMessage("VoHiYo")
 			}
@@ -258,14 +262,10 @@ func handleWebSocketMessage(data interface{}) {
 }
 
 func sendChatMessage(chatMessage string) error {
-	// Load configuration
-	cfgProvider := config.MustNewConfigProvider()
-	cfg := cfgProvider.Get()
-
 	// Prepare the request body
 	requestBody := map[string]string{
-		"broadcaster_id": cfg.ChatChannelUserId,
-		"sender_id":      cfg.BotUserId,
+		"broadcaster_id": appConfig.ChatChannelUserId,
+		"sender_id":      appConfig.BotUserId,
 		"message":        chatMessage,
 	}
 
@@ -283,8 +283,8 @@ func sendChatMessage(chatMessage string) error {
 	}
 
 	// Add headers
-	req.Header.Set("Authorization", "Bearer "+cfg.OauthToken)
-	req.Header.Set("Client-Id", cfg.ClientId)
+	req.Header.Set("Authorization", "Bearer "+appConfig.OauthToken)
+	req.Header.Set("Client-Id", appConfig.ClientId)
 	req.Header.Set("Content-Type", "application/json")
 
 	// Send the request
@@ -311,17 +311,13 @@ func sendChatMessage(chatMessage string) error {
 }
 
 func registerEventSubListeners() error {
-	// Load configuration
-	cfgProvider := config.MustNewConfigProvider()
-	cfg := cfgProvider.Get()
-
 	// Create the request body
 	requestBody := map[string]interface{}{
 		"type":    "channel.chat.message",
 		"version": "1",
 		"condition": map[string]string{
-			"broadcaster_user_id": cfg.ChatChannelUserId,
-			"user_id":             cfg.BotUserId,
+			"broadcaster_user_id": appConfig.ChatChannelUserId,
+			"user_id":             appConfig.BotUserId,
 		},
 		"transport": map[string]string{
 			"method":     "websocket",
@@ -342,9 +338,11 @@ func registerEventSubListeners() error {
 		return err
 	}
 
+	fmt.Printf("requestBody: %v\n", requestBody)
+
 	// Add headers
-	req.Header.Set("Authorization", "Bearer "+cfg.OauthToken)
-	req.Header.Set("Client-Id", cfg.ClientId)
+	req.Header.Set("Authorization", "Bearer "+appConfig.OauthToken)
+	req.Header.Set("Client-Id", appConfig.ClientId)
 	req.Header.Set("Content-Type", "application/json")
 
 	// Send the request

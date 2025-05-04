@@ -9,7 +9,7 @@ import (
 )
 
 // SetupRoutes configures all application routes
-func SetupRoutes(cfg *config.Provider) http.Handler {
+func SetupRoutes(cfg *config.Config) http.Handler {
 	mux := http.NewServeMux()
 
 	// Setup middleware

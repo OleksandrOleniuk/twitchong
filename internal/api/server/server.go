@@ -18,23 +18,23 @@ import (
 // Server represents the HTTP server
 type Server struct {
 	httpServer *http.Server
-	config     *config.Provider
+	config     *config.Config
 	logger     *zap.Logger
 }
 
 // New creates a new server instance
-func New(cfg *config.Provider) *Server {
+func New(cfg *config.Config) *Server {
 	router := routes.SetupRoutes(cfg)
 
 	// Create a child logger with server context
 	logger := utils.With(
 		zap.String("component", "server"),
-		zap.Int("port", cfg.Get().ServerPort),
+		zap.Int("port", cfg.ServerPort),
 	)
 
 	return &Server{
 		httpServer: &http.Server{
-			Addr:         fmt.Sprintf(":%d", cfg.Get().ServerPort),
+			Addr:         fmt.Sprintf(":%d", cfg.ServerPort),
 			Handler:      router,
 			ReadTimeout:  15 * time.Second,
 			WriteTimeout: 15 * time.Second,
@@ -52,7 +52,7 @@ func (s *Server) Start() error {
 		if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			s.logger.Error("server failed to start",
 				zap.Error(err),
-				zap.Int("port", s.config.Get().ServerPort),
+				zap.Int("port", s.config.ServerPort),
 			)
 		}
 	}()
