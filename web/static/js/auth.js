@@ -5,6 +5,9 @@ const formDefaults = {
     defaultScopes: [
         'chat:read',
         'chat:edit',
+        'user:bot',
+        'user:read:chat',
+        'user:write:chat'
     ],
     availableScopes: [
         'channel:manage:polls',
@@ -16,7 +19,10 @@ const formDefaults = {
         'chat:read',
         'chat:edit',
         'channel:moderate',
-        'channel:read:subscriptions'
+        'channel:read:subscriptions',
+        'user:bot',
+        'user:read:chat',
+        'user:write:chat'
     ]
 };
 
@@ -31,7 +37,7 @@ function updateScopeValue() {
 function createScopeCheckbox(scope, isChecked) {
     const div = document.createElement('div');
     div.className = 'flex items-center';
-    
+
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.name = 'scope_checkbox';
@@ -39,11 +45,11 @@ function createScopeCheckbox(scope, isChecked) {
     checkbox.className = 'h-4 w-4 text-[#6441a5] focus:ring-[#6441a5] border-gray-300 rounded';
     checkbox.checked = isChecked;
     checkbox.onchange = updateScopeValue;
-    
+
     const label = document.createElement('label');
     label.className = 'ml-2 block text-sm text-gray-700';
     label.textContent = scope;
-    
+
     div.appendChild(checkbox);
     div.appendChild(label);
     return div;
@@ -53,10 +59,10 @@ function createScopeCheckbox(scope, isChecked) {
 function initializeForm() {
     // Set response type
     document.querySelector('input[name="response_type"]').value = formDefaults.responseType;
-    
+
     // Set redirect URI
     document.querySelector('input[name="redirect_uri"]').value = formDefaults.redirectUri;
-    
+
     // Initialize scope checkboxes
     const scopeContainer = document.getElementById('scope_container');
     formDefaults.availableScopes.forEach(scope => {
@@ -64,7 +70,7 @@ function initializeForm() {
         const checkboxElement = createScopeCheckbox(scope, isChecked);
         scopeContainer.appendChild(checkboxElement);
     });
-    
+
     // Initialize scope value
     updateScopeValue();
 }

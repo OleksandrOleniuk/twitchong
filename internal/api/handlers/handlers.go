@@ -18,11 +18,11 @@ func HealthCheck(w http.ResponseWriter, r *http.Request) {
 
 // TwitchCallbackHandler handles the OAuth callback from Twitch
 type TwitchCallbackHandler struct {
-	cfg *config.Provider
+	cfg *config.Config
 }
 
 // NewTwitchCallback creates a new TwitchCallbackHandler
-func NewTwitchCallback(cfg *config.Provider) http.HandlerFunc {
+func NewTwitchCallback(cfg *config.Config) http.HandlerFunc {
 	handler := &TwitchCallbackHandler{cfg: cfg}
 	return handler.Handle
 }
@@ -54,8 +54,8 @@ func (h *TwitchCallbackHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		state := values.Get("state")
 
 		// Verify state parameter
-		if state != h.cfg.Get().TwitchSecretState {
-			log.Printf("Invalid state parameter. Expected: %s, Got: %s", h.cfg.Get().TwitchSecretState, state)
+		if state != h.cfg.TwitchSecretState {
+			log.Printf("Invalid state parameter. Expected: %s, Got: %s", h.cfg.TwitchSecretState, state)
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

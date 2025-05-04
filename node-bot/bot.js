@@ -12,7 +12,7 @@ var websocketSessionID;
 
 // Start executing the bot from here
 (async () => {
-    console.log(123);
+	console.log(123);
 	// Verify that the authentication is valid
 	await getAuth();
 
