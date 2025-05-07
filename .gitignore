@@ -28,6 +28,8 @@ go.work.sum
 tmp/
 
 node_modules
+assets/js/index.js
+assets/js/index.min.css
 
 *_templ.go
 
