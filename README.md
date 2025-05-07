@@ -1,4 +1,4 @@
-# Twitch Chat Bot
+# Twitchong
 
 A Golang-based application for Twitch integration and chat bot functionality.
 
