@@ -103,7 +103,6 @@ templ IndexPage(clientId string, twitchSecretState string) {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Twitchong</title>
 			<link rel="stylesheet" href="/index.min.css"/>
-			<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 			<script src="/index.js"></script>
 		</head>
 		<body class="bg-gray-100 p-5">
@@ -116,48 +115,6 @@ templ IndexPage(clientId string, twitchSecretState string) {
 					@formTemplate(clientId, twitchSecretState)
 				</div>
 			</div>
-		</body>
-	</html>
-}
-
-templ FragmentsExtractionPage() {
-	<!DOCTYPE html>
-	<html>
-		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Processing Twitch Authentication</title>
-			<link rel="stylesheet" href="/index.min.css"/>
-			<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-			<script src="/index.js"></script>
-			<style>
-		body {
-			font-family: Arial, sans-serif;
-			text-align: center;
-			padding-top: 50px;
-		}
-
-		#result {
-			margin-top: 20px;
-			padding: 10px;
-		}
-
-		/* Twitch color for spinner */
-		.twitch-purple {
-			color: #7d5bbe;
-		}
-	</style>
-		</head>
-		<body>
-			<h1>Finalizing Twitch Authentication</h1>
-			<div id="auth-process" class="flex flex-col items-center justify-center">
-				<!-- Tailwind spinner animation -->
-				<div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-twitch-purple twitch-purple mb-4"></div>
-				<div id="result" class="text-gray-700 text-lg">Processing your login...</div>
-			</div>
-			<div id="auth-result"></div>
-			<!-- Using hx-trigger="load" to automatically send the request when page loads -->
-			<div hx-trigger="load" hx-post="/process-tokens" hx-target="#auth-result" hx-vals="js:{...parseTokens()}"></div>
 		</body>
 	</html>
 }

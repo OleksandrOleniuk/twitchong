@@ -25,7 +25,7 @@ func New(config *config.Config) *echo.Echo {
 	e.Use(middleware.Logger())
 
 	e.File("/index.js", "assets/js/index.js")
-	e.File("/index.min.css", "assets/css/index.min.css")
+	e.File("/index.min.css", "assets/js/index.min.css")
 
 	e.GET("/twitch/callback", handlers.HandleTwitchCallback)
 	e.POST("/process-tokens", handlers.ProcessTokens)
