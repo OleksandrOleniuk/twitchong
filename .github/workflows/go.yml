@@ -36,15 +36,18 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Use Node.js
+    - name: Use Node.js for assets
       uses: actions/setup-node@v4
       with:
         node-version: '22.x'
 
-    - name: Build assets
-      run: cd assets/js
-      run: npm ci
+    - name: Install dependencies
+      run: cd assets/js && npm ci
+
+    - name: Build esbuild
       run: npm run esbuild
+
+    - name: Build tailwindcss
       run: npm run tailwindcss
 
     - name: Test application
