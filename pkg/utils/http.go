@@ -20,20 +20,21 @@ type RequestConfig struct {
 // and returns the response. The caller is responsible for closing the response body.
 //
 // Example:
-//   config := RequestConfig{
-//       Method: "GET",
-//       URL:    "https://api.example.com/data",
-//       Headers: map[string]string{
-//           "Authorization": "Bearer token",
-//       },
-//   }
-//   resp, err := SendRequest(config)
-//   if err != nil {
-//       log.Printf("Error making request: %v", err)
-//       return
-//   }
-//   defer resp.Body.Close()
-//   // Process response...
+//
+//	config := RequestConfig{
+//	    Method: "GET",
+//	    URL:    "https://api.example.com/data",
+//	    Headers: map[string]string{
+//	        "Authorization": "Bearer token",
+//	    },
+//	}
+//	resp, err := SendRequest(config)
+//	if err != nil {
+//	    log.Printf("Error making request: %v", err)
+//	    return
+//	}
+//	defer resp.Body.Close()
+//	// Process response...
 func SendRequest(config RequestConfig) (*http.Response, error) {
 	// Create request body if provided
 	var body io.Reader
@@ -76,48 +77,48 @@ func SendRequest(config RequestConfig) (*http.Response, error) {
 //
 // Examples:
 //
-// 1. Simple GET request with response parsing:
-//   type UserResponse struct {
-//       ID    string `json:"id"`
-//       Login string `json:"login"`
-//   }
-//   var response UserResponse
-//   config := RequestConfig{
-//       Method: "GET",
-//       URL:    "https://api.example.com/user",
-//       Headers: map[string]string{
-//           "Authorization": "Bearer token",
-//       },
-//   }
-//   err := SendRequestAndParseResponse(config, &response)
+//  1. Simple GET request with response parsing:
+//     type UserResponse struct {
+//     ID    string `json:"id"`
+//     Login string `json:"login"`
+//     }
+//     var response UserResponse
+//     config := RequestConfig{
+//     Method: "GET",
+//     URL:    "https://api.example.com/user",
+//     Headers: map[string]string{
+//     "Authorization": "Bearer token",
+//     },
+//     }
+//     err := SendRequestAndParseResponse(config, &response)
 //
-// 2. POST request with JSON body:
-//   config := RequestConfig{
-//       Method: "POST",
-//       URL:    "https://api.example.com/create",
-//       Headers: map[string]string{
-//           "Authorization": "Bearer token",
-//       },
-//       Body: map[string]string{
-//           "name": "example",
-//       },
-//   }
-//   err := SendRequestAndParseResponse(config, nil)
+//  2. POST request with JSON body:
+//     config := RequestConfig{
+//     Method: "POST",
+//     URL:    "https://api.example.com/create",
+//     Headers: map[string]string{
+//     "Authorization": "Bearer token",
+//     },
+//     Body: map[string]string{
+//     "name": "example",
+//     },
+//     }
+//     err := SendRequestAndParseResponse(config, nil)
 //
-// 3. Request with complex response structure:
-//   type Response struct {
-//       Data []struct {
-//           ID   string `json:"id"`
-//           Name string `json:"name"`
-//       } `json:"data"`
-//   }
-//   var result Response
-//   config := RequestConfig{
-//       Method: "GET",
-//       URL:    "https://api.example.com/items",
-//   }
-//   err := SendRequestAndParseResponse(config, &result)
-func SendRequestAndParseResponse(config RequestConfig, result interface{}) error {
+//  3. Request with complex response structure:
+//     type Response struct {
+//     Data []struct {
+//     ID   string `json:"id"`
+//     Name string `json:"name"`
+//     } `json:"data"`
+//     }
+//     var result Response
+//     config := RequestConfig{
+//     Method: "GET",
+//     URL:    "https://api.example.com/items",
+//     }
+//     err := SendRequestAndParseResponse(config, &result)
+func SendRequestAndParseResponse(config RequestConfig, result any) error {
 	resp, err := SendRequest(config)
 	if err != nil {
 		return err
@@ -143,4 +144,5 @@ func SendRequestAndParseResponse(config RequestConfig, result interface{}) error
 	}
 
 	return nil
-} 
+}
+

@@ -10,6 +10,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// TwitchTokens represents the tokens returned from Twitch
+type TwitchTokens struct {
+	AccessToken string `form:"access_token" json:"access_token"`
+	IDToken     string `form:"id_token" json:"id_token"`
+	Scope       string `form:"scope" json:"scope"`
+	State       string `form:"state" json:"state"`
+	TokenType   string `form:"token_type" json:"token_type"`
+}
+
 // TwitchError represents the error returned from Twitch
 type TwitchError struct {
 	Error            string `json:"error"`
@@ -59,16 +68,7 @@ func HandleTwitchCallback(c echo.Context) error {
 
 	// For successful authentication, tokens are in the fragment
 	// We need to render a page that extracts the fragment and sends it back
-	return utils.TemplRender(c, http.StatusOK, views.FragmentsExtractionPage())
-}
-
-// TwitchTokens represents the tokens returned from Twitch
-type TwitchTokens struct {
-	AccessToken string `form:"access_token" json:"access_token"`
-	IDToken     string `form:"id_token" json:"id_token"`
-	Scope       string `form:"scope" json:"scope"`
-	State       string `form:"state" json:"state"`
-	TokenType   string `form:"token_type" json:"token_type"`
+	return utils.TemplRender(c, http.StatusOK, views.TokenFragmentsExtractionTemplate())
 }
 
 // processTokens handles the tokens sent from the client-side JavaScript
