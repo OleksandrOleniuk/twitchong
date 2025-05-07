@@ -14,7 +14,7 @@ import (
 	"time"
 
 	// "github.com/OleksandrOleniuk/twitchong/internal/api/server"
-	"github.com/OleksandrOleniuk/twitchong/internal/api/server_echo"
+	"github.com/OleksandrOleniuk/twitchong/internal/api/server"
 	"github.com/OleksandrOleniuk/twitchong/internal/api/shared"
 	"github.com/OleksandrOleniuk/twitchong/internal/config"
 	"github.com/OleksandrOleniuk/twitchong/pkg/utils"
@@ -39,14 +39,13 @@ func main() {
 	}
 
 	// Initialize the server
-	srv := server_echo.New(appConfig)
-	fmt.Printf("srv: %v\n", srv)
+	srv := server.New(appConfig)
 
 	// Start the server in a goroutine
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		if err := server_echo.Start(srv, appConfig); err != nil {
+		if err := server.Start(srv, appConfig); err != nil {
 			logger.Error("server error", zap.Error(err))
 			// If server fails to start, initiate graceful shutdown
 			close(shutdownChan)
