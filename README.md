@@ -34,8 +34,8 @@ This project provides a robust Twitch chat bot implementation with a web interfa
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/twitch-chat-bot.git
-   cd twitch-chat-bot
+   git clone https://github.com/OleksandrOleniuk/twitchong.git
+   cd twitchong
    ```
 
 2. Install Go dependencies:
@@ -56,35 +56,15 @@ This project provides a robust Twitch chat bot implementation with a web interfa
 
 ## Development
 
-### Building the application
+### Running the application locally
 
-1. Generate Templ templates:
-   ```bash
-   templ generate
-   ```
-
-2. Build frontend assets:
-   ```bash
-   cd assets/js
-   npm run esbuild
-   npm run tailwindcss
-   ```
-
-3. Build the Go application:
-   ```bash
-   go build -v ./...
-   ```
-
+```bash
+air
+```
 ### Running tests
 
 ```bash
 go test -v ./...
-```
-
-### Running the application locally
-
-```bash
-go run cmd/bot/main.go
 ```
 
 ## Configuration
