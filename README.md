@@ -98,11 +98,14 @@ cp .env.example .env
 Then edit the `.env` file with your specific Twitch credentials:
 
 ```
-TWITCH_CLIENT_ID=your_client_id
-TWITCH_CLIENT_SECRET=your_client_secret
-TWITCH_BOT_USERNAME=your_bot_username
-TWITCH_BOT_OAUTH_TOKEN=oauth:your_oauth_token
-TWITCH_CHANNELS=channel1,channel2
+BOT_USER_ID=bot_user_id
+CHAT_CHANNEL_USER_ID=chat_channel_user_id
+
+CLIENT_ID=cliend_id
+CLIENT_SECRET=client_secret
+
+TWITCH_SECRET_STATE=twitch_secret_state
+
 ```
 
 You can obtain your Twitch credentials by creating an application in the [Twitch Developer Console](https://dev.twitch.tv/console/apps).
