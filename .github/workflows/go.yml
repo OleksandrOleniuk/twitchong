@@ -27,13 +27,12 @@ jobs:
 
     - name: Install dependencies
       run: |
-        go get .
         go install github.com/a-h/templ/cmd/templ@latest
 
     - name: Build Templ
       run: templ generate
 
-    - name: Build
+    - name: Build Core
       run: go build -v ./...
 
     - name: Use Node.js for assets
@@ -41,14 +40,9 @@ jobs:
       with:
         node-version: '22.x'
 
-    - name: Install dependencies
-      run: cd assets/js && npm ci
-
-    - name: Build esbuild
-      run: npm run esbuild
-
-    - name: Build tailwindcss
-      run: npm run tailwindcss
+    - run: cd assets/js && npm ci
+    - run: cd assets/js && npm run esbuild
+    - run: cd assets/js && npm run tailwindcss
 
     - name: Test application
       run: go test -v ./...
