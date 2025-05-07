@@ -26,7 +26,7 @@ This project provides a robust Twitch chat bot implementation with a web interfa
 
 ## Prerequisites
 
-- Go 1.18 or higher
+- Go 1.24.2 or higher
 - Node.js 22.x
 - npm
 
