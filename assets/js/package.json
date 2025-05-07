@@ -1,0 +1,22 @@
+{
+  "name": "js",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "esbuild": "./node_modules/.bin/esbuild index.ts --bundle --outfile=index.js",
+    "tailwindcss": "./node_modules/.bin/tailwindcss -i ./index.css -o ./index.min.css --minify"
+  },
+  "dependencies": {
+    "htmx.org": "^2.0.4",
+    "tailwindcss": "^4.1.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.1.5",
+    "esbuild": "0.25.3"
+  }
+}

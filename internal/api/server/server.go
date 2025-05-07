@@ -1,65 +1,51 @@
 package server
 
 import (
-	"context"
-	"fmt"
-	"log"
+	"errors"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
+	"strconv"
 
-	"github.com/OleksandrOleniuk/twitchong/internal/api/routes"
+	"github.com/OleksandrOleniuk/twitchong/internal/api/handlers"
+	"github.com/OleksandrOleniuk/twitchong/internal/api/middleware"
 	"github.com/OleksandrOleniuk/twitchong/internal/config"
+	"github.com/OleksandrOleniuk/twitchong/pkg/utils"
+	"github.com/OleksandrOleniuk/twitchong/views"
+	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
 )
 
-// Server represents the HTTP server
-type Server struct {
-	httpServer *http.Server
-	config     *config.Provider
-}
+var (
+	logger = utils.With(zap.String("component", "main"))
+)
 
-// New creates a new server instance
-func New(cfg *config.Provider) *Server {
-	router := routes.SetupRoutes(cfg)
+func New(config *config.Config) *echo.Echo {
+	e := echo.New()
 
-	return &Server{
-		httpServer: &http.Server{
-			Addr:         fmt.Sprintf(":%d", cfg.Get().ServerPort),
-			Handler:      router,
-			ReadTimeout:  15 * time.Second,
-			WriteTimeout: 15 * time.Second,
-		},
-		config: cfg,
-	}
+	// Middleware
+	e.Use(middleware.Logger())
+
+	e.File("/index.js", "assets/js/index.js")
+	e.File("/index.min.css", "assets/js/index.min.css")
+
+	e.GET("/twitch/callback", handlers.HandleTwitchCallback)
+	e.POST("/process-tokens", handlers.ProcessTokens)
+
+	e.GET("/", func(c echo.Context) error {
+		handlers.SetState(config.TwitchSecretState, true)
+		return utils.TemplRender(c, http.StatusOK, views.IndexPage(config.ClientId, config.TwitchSecretState))
+	})
+
+	return e
 }
 
 // Start runs the HTTP server and gracefully handles shutdown
-func (s *Server) Start() error {
+func Start(e *echo.Echo, cfg *config.Config) error {
 	// Server in a goroutine so shutdown can be handled gracefully
 	go func() {
-		log.Printf("Starting server on port %d", s.config.Get().ServerPort)
-		if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Could not listen on port %d: %v", s.config.Get().ServerPort, err)
+		// Start server
+		if err := e.Start(":" + strconv.Itoa(cfg.ServerPort)); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			logger.Error("failed to start server", zap.Error(err))
 		}
 	}()
-
-	// Wait for interrupt signal to gracefully shutdown the server
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-
-	log.Println("Shutting down server...")
-
-	// Create a deadline for server shutdown
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	if err := s.httpServer.Shutdown(ctx); err != nil {
-		return fmt.Errorf("server forced to shutdown: %w", err)
-	}
-
-	log.Println("Server gracefully stopped")
 	return nil
 }

@@ -6,8 +6,6 @@ name: Go
 on:
   push:
     branches: [ "master", "develop" ]
-  pull_request:
-    branches: [ "master", "develop" ]
 
 jobs:
 
@@ -19,10 +17,30 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.22.0'
+        go-version-file: 'go.mod'
+    - run: go version
 
-    - name: Build
+    - name: Install dependencies
+      run: |
+        go install github.com/a-h/templ/cmd/templ@latest
+
+    - name: Build Templ
+      run: templ generate
+
+    - name: Build Core
       run: go build -v ./...
 
-    - name: Test
+    - name: Use Node.js for assets
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.x'
+        cache: npm
+        cache-dependency-path: assets/js/package-lock.json
+
+    - run: cd assets/js && npm ci
+    - run: cd assets/js && npm run esbuild
+    - run: cd assets/js && npm run tailwindcss
+
+    - name: Test application
       run: go test -v ./...
+
