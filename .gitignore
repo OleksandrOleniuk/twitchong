@@ -26,3 +26,8 @@ go.work.sum
 
 # Air live reload tmp directory
 tmp/
+
+node_modules
+
+*_templ.go
+
