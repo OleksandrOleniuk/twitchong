@@ -6,8 +6,6 @@ name: Go
 on:
   push:
     branches: [ "master", "develop" ]
-  pull_request:
-    branches: [ "master", "develop" ]
 
 jobs:
 
@@ -20,10 +18,6 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.24.2'
-
-    # You can test your matrix by printing the current Go version
-    - name: Display Go version
-      run: go version
 
     - name: Install dependencies
       run: |
@@ -39,6 +33,8 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '22.x'
+        cache: npm
+        cache-dependency-path: assets/js/package-lock.json
 
     - run: cd assets/js && npm ci
     - run: cd assets/js && npm run esbuild
