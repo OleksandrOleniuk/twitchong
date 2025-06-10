@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	logger = utils.With(zap.String("component", "main"))
+	logger = utils.With(zap.String("component", "server"))
 )
 
 func New(config *config.Config) *echo.Echo {
@@ -40,12 +40,8 @@ func New(config *config.Config) *echo.Echo {
 
 // Start runs the HTTP server and gracefully handles shutdown
 func Start(e *echo.Echo, cfg *config.Config) error {
-	// Server in a goroutine so shutdown can be handled gracefully
-	go func() {
-		// Start server
-		if err := e.Start(":" + strconv.Itoa(cfg.ServerPort)); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Error("failed to start server", zap.Error(err))
-		}
-	}()
+	if err := e.Start(":" + strconv.Itoa(cfg.ServerPort)); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		logger.Error("failed to start server", zap.Error(err))
+	}
 	return nil
 }
